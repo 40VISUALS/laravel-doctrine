@@ -1,6 +1,11 @@
 <?php namespace Atrauzzi\LaravelDoctrine {
 
-	use Illuminate\Support\ServiceProvider as Base;
+    use Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain;
+    use Doctrine\ORM\Mapping\Driver\DriverChain;
+    use Gedmo\Mapping\Annotation\Tree;
+    use Gedmo\Tree\Mapping\Driver\Yaml;
+    use Gedmo\Tree\TreeListener;
+    use Illuminate\Support\ServiceProvider as Base;
 	//
 	use Doctrine\DBAL\Types\Type;
 	use Illuminate\Contracts\Foundation\Application;
@@ -42,6 +47,9 @@
 
 			$this->app->singleton('Doctrine\ORM\EntityManager', function (Application $app) {
 
+                $classLoader = new \Doctrine\Common\ClassLoader('Gedmo', __DIR__."/../vendor/gedmo/doctrine-extensions/lib");
+                $classLoader->register();
+
 				$debug = config('doctrine.debug', config('app.debug', false));
 
 				$cache = $debug ? null : $this->createCache();
@@ -75,7 +83,8 @@
 
 				}
 				else {
-					$metadataDriver = $this->createMetadataDriver($doctrineConfig, $metadataConfig);
+					$tempDriver = $this->createMetadataDriver($doctrineConfig, $metadataConfig);
+                    $metadataDriver = new Yaml($tempDriver);
 				}
 
 				$doctrineConfig->setMetadataDriverImpl($metadataDriver);
@@ -113,6 +122,7 @@
 				if($prefix = config('doctrine.connection.prefix'))
 					$eventManager->addEventListener(Events::loadClassMetadata, new Listener\Metadata\TablePrefix($prefix));
 
+                $eventManager->addEventSubscriber(new TreeListener());
 				//
 				// At long last!
 				//
