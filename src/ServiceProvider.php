@@ -1,5 +1,8 @@
 <?php namespace Atrauzzi\LaravelDoctrine {
 
+    use Doctrine\Common\Annotations\AnnotationReader;
+    use Doctrine\Common\Annotations\CachedReader;
+    use Doctrine\Common\Cache\ArrayCache;
     use Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain;
     use Doctrine\ORM\Mapping\Driver\DriverChain;
     use Gedmo\DoctrineExtensions;
@@ -86,13 +89,12 @@
                 else {
                     $metadataDriver = new MappingDriverChain();
                     $configuredDriver = $this->createMetadataDriver($doctrineConfig, $metadataConfig);
-                    $treeDriver = $translatableDriverImpl = $doctrineConfig->newDefaultAnnotationDriver(
-                        '/vendor/gedmo/doctrine-extensions/lib/Gedmo/Translatable/Entity'
+                    $treeDriver = $doctrineConfig->newDefaultAnnotationDriver(
+                        '/vendor/gedmo/doctrine-extensions/lib/Gedmo/Tree/Entity'
                     );
-                    $metadataDriver->addDriver($configuredDriver,'Entity');
+                    $metadataDriver->addDriver($configuredDriver,'OS');
                     $metadataDriver->addDriver($treeDriver,'Gedmo');
-                    $metadataDriver->setDefaultDriver($configuredDriver);
-                    //DoctrineExtensions::registerAbstractMappingIntoDriverChainORM($metadataDriver);
+                    DoctrineExtensions::registerAbstractMappingIntoDriverChainORM($metadataDriver);
                 }
 
                 $doctrineConfig->setMetadataDriverImpl($metadataDriver);
@@ -130,7 +132,8 @@
                 if($prefix = config('doctrine.connection.prefix'))
                     $eventManager->addEventListener(Events::loadClassMetadata, new Listener\Metadata\TablePrefix($prefix));
 
-                $eventManager->addEventSubscriber(new TreeListener());
+                $treeListener = new TreeListener();
+                $eventManager->addEventSubscriber($treeListener);
                 //
                 // At long last!
                 //
