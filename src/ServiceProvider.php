@@ -134,6 +134,10 @@
 
                 $treeListener = new TreeListener();
                 $eventManager->addEventSubscriber($treeListener);
+
+                $timestampableListener = new TimestampableListener();
+                $eventManager->addEventSubscriber($timestampableListener);
+
                 //
                 // At long last!
                 //
