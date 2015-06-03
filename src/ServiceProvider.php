@@ -8,6 +8,7 @@
     use Gedmo\DoctrineExtensions;
     use Gedmo\Mapping\Annotation\Tree;
     use Gedmo\Tree\Mapping\Driver\Yaml;
+    use Gedmo\Timestampable\TimestampableListener;
     use Gedmo\Tree\TreeListener;
     use Illuminate\Support\ServiceProvider as Base;
     //
