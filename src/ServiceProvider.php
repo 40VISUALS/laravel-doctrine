@@ -319,23 +319,23 @@
 
         }
 
-    }
+        /**
+         * Create the event manager and configure some listeners.
+         * This function is static so it can be used outside Laravel-Doctrine by our frankensystem.
+         * @return EventManager
+         */
+        public static function createEventManager() {
+            $eventManager = new EventManager();
 
-    /**
-     * Create the event manager and configure some listeners.
-     * This function is static so it can be used outside Laravel-Doctrine by our frankensystem.
-     * @return EventManager
-     */
-    public static function createEventManager() {
-        $eventManager = new EventManager();
+            $treeListener = new TreeListener();
+            $eventManager->addEventSubscriber($treeListener);
 
-        $treeListener = new TreeListener();
-        $eventManager->addEventSubscriber($treeListener);
+            $timestampableListener = new TimestampableListener();
+            $eventManager->addEventSubscriber($timestampableListener);
 
-        $timestampableListener = new TimestampableListener();
-        $eventManager->addEventSubscriber($timestampableListener);
+            return $eventManager;
+        }
 
-        return $eventManager;
     }
 
 }
