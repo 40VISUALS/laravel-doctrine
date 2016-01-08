@@ -128,16 +128,12 @@
                 if($proxyClassNamespace = config('doctrine.proxy_classes.namespace'))
                     $doctrineConfig->setProxyNamespace($proxyClassNamespace);
 
+                // Get the event manager with any configured listeners
+                $eventManager = self::createEventManager();
+
                 // Trap doctrine events, to support entity table prefix
-                $eventManager = new EventManager();
                 if($prefix = config('doctrine.connection.prefix'))
                     $eventManager->addEventListener(Events::loadClassMetadata, new Listener\Metadata\TablePrefix($prefix));
-
-                $treeListener = new TreeListener();
-                $eventManager->addEventSubscriber($treeListener);
-
-                $timestampableListener = new TimestampableListener();
-                $eventManager->addEventSubscriber($timestampableListener);
 
                 //
                 // At long last!
@@ -323,6 +319,23 @@
 
         }
 
+    }
+
+    /**
+     * Create the event manager and configure some listeners.
+     * This function is static so it can be used outside Laravel-Doctrine by our frankensystem.
+     * @return EventManager
+     */
+    public static function createEventManager() {
+        $eventManager = new EventManager();
+
+        $treeListener = new TreeListener();
+        $eventManager->addEventSubscriber($treeListener);
+
+        $timestampableListener = new TimestampableListener();
+        $eventManager->addEventSubscriber($timestampableListener);
+
+        return $eventManager;
     }
 
 }
