@@ -336,6 +336,15 @@
             return $eventManager;
         }
 
+        /**
+         * create custom functions for DQL
+         * 
+         * @param $config
+         */
+        public static function setCustomFunctions($config){
+            $config->addCustomNumericFunction('INT', 'ORM\Query\AST\CastAsInteger');
+        }
+
     }
 
 }
