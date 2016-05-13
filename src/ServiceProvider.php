@@ -128,6 +128,8 @@
                 if($proxyClassNamespace = config('doctrine.proxy_classes.namespace'))
                     $doctrineConfig->setProxyNamespace($proxyClassNamespace);
 
+                $this->setCustomFunctions($doctrineConfig);
+
                 // Get the event manager with any configured listeners
                 $eventManager = self::createEventManager();
 
